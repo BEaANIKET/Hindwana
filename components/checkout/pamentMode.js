@@ -7,20 +7,20 @@ const PaymentMode = ({ paymentMode, setPaymentMode }) => {
       
       <TouchableOpacity 
         style={styles.radioContainer}
-        onPress={() => setPaymentMode('cod')}
+        onPress={() => setPaymentMode('COD')}
       >
         <View style={styles.radioButton}>
-          {paymentMode === 'cod' && <View style={styles.radioSelected} />}
+          {paymentMode === 'COD' && <View style={styles.radioSelected} />}
         </View>
         <Text style={styles.radioLabel}>Cash on Delivery</Text>
       </TouchableOpacity>
       
       <TouchableOpacity 
         style={styles.radioContainer}
-        onPress={() => setPaymentMode('online')}
+        onPress={() => setPaymentMode('Online')}
       >
         <View style={styles.radioButton}>
-          {paymentMode === 'online' && <View style={styles.radioSelected} />}
+          {paymentMode === 'Online' && <View style={styles.radioSelected} />}
         </View>
         <Text style={styles.radioLabel}>Online Payment (Razorpay)</Text>
       </TouchableOpacity>

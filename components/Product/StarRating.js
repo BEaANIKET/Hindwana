@@ -1,19 +1,51 @@
-
 // StarRating.js
-import { Ionicons } from '@expo/vector-icons';
-import { View } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome'; // or whatever icon library you're using
 
-export const StarRating = ({ rating, size = 16 }) => {
+export const StarRating = ({ 
+  rating = 0, 
+  onChangeRating, 
+  interactive = false, 
+  disabled = false,
+  maxStars = 5 
+}) => {
+  const handleStarPress = (starIndex) => {
+    if (interactive && !disabled && onChangeRating) {
+      onChangeRating(starIndex + 1);
+    }
+  };
+
   return (
     <View style={{ flexDirection: 'row' }}>
-      {Array.from({ length: 5 }, (_, i) => (
-        <Ionicons
-          key={i}
-          name={i < rating ? 'star' : 'star-outline'}
-          size={size}
-          color={i < rating ? '#FFD700' : '#D1D5DB'}
-        />
-      ))}
+      {[...Array(maxStars)].map((_, index) => {
+        const filled = index < rating;
+        
+        if (interactive && !disabled) {
+          return (
+            <TouchableOpacity
+              key={index}
+              onPress={() => handleStarPress(index)}
+              style={{ marginRight: 4 }}
+            >
+              <Icon
+                name={filled ? 'star' : 'star-o'}
+                size={20}
+                color={filled ? '#FFD700' : '#D1D5DB'}
+              />
+            </TouchableOpacity>
+          );
+        }
+        
+        return (
+          <Icon
+            key={index}
+            name={filled ? 'star' : 'star-o'}
+            size={20}
+            color={filled ? '#FFD700' : '#D1D5DB'}
+            style={{ marginRight: 4 }}
+          />
+        );
+      })}
     </View>
   );
 };

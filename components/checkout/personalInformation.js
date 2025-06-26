@@ -1,29 +1,48 @@
+import { useEffect, useState } from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 
-const PersonalInformation = ({ personalInfo, setPersonalInfo }) => {
+const PersonalInformation = ({ personalInfo, setPersonalInfo, showErrors = false }) => {
+  const [errors, setErrors] = useState({ name: '', whatsapp: '' });
+
+  useEffect(() => {
+    if (showErrors) {
+      validateFields();
+    }
+  }, [personalInfo, showErrors]);
+
+  const validateFields = () => {
+    let tempErrors = {};
+    tempErrors.name = personalInfo.name?.trim() ? '' : 'Name is required';
+    tempErrors.whatsapp = personalInfo.whatsapp?.trim() ? '' : 'WhatsApp number is required';
+    setErrors(tempErrors);
+    return Object.values(tempErrors).every((x) => x === '');
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Personal Information</Text>
-      
+
       <View style={styles.inputContainer}>
         <Text style={styles.label}>Name</Text>
         <TextInput
-          style={styles.input}
+          style={[styles.input, errors.name ? styles.inputError : null]}
           placeholder="Enter your name"
           value={personalInfo.name}
-          onChangeText={(text) => setPersonalInfo({...personalInfo, name: text})}
+          onChangeText={(text) => setPersonalInfo({ ...personalInfo, name: text })}
         />
+        {errors.name ? <Text style={styles.errorText}>{errors.name}</Text> : null}
       </View>
-      
+
       <View style={styles.inputContainer}>
         <Text style={styles.label}>WhatsApp</Text>
         <TextInput
-          style={styles.input}
+          style={[styles.input, errors.whatsapp ? styles.inputError : null]}
           placeholder="Enter WhatsApp number"
           value={personalInfo.whatsapp}
-          onChangeText={(text) => setPersonalInfo({...personalInfo, whatsapp: text})}
+          onChangeText={(text) => setPersonalInfo({ ...personalInfo, whatsapp: text })}
           keyboardType="phone-pad"
         />
+        {errors.whatsapp ? <Text style={styles.errorText}>{errors.whatsapp}</Text> : null}
       </View>
     </View>
   );
@@ -63,6 +82,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 10,
     fontSize: 14,
+  },
+  inputError: {
+    borderColor: '#FF5A5F',
+  },
+  errorText: {
+    color: '#FF5A5F',
+    fontSize: 12,
+    marginTop: 4,
   },
 });
 

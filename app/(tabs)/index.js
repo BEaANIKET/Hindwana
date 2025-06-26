@@ -5,21 +5,23 @@ import { useEffect, useState } from "react";
 import {
   Image,
   ImageBackground,
+  Keyboard,
   SafeAreaView,
   ScrollView,
   StatusBar,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
-import { TextInput } from "react-native-web";
 import ActiveSlider from "../../components/Main/activeslider";
 import BottomProduct from "../../components/Main/bottomproduct";
 import Category from "../../components/Main/category";
 import Grid from "../../components/Main/grid";
 import Hero from "../../components/Main/hero";
-const HomeScreen = ({onSearch}) => {
+
+const HomeScreen = () => {
   const navigation = useNavigation();
   const [info, setInfo] = useState([]);
   const gethome = async () => {

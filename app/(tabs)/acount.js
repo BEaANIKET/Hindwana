@@ -1,75 +1,160 @@
-import React, { useState } from "react";
-import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView, ImageBackground } from "react-native";
-import Accordion from "../../components/Profile/Accordian";
 import { useNavigation } from "expo-router";
+import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import Accordion from "../../components/Profile/Accordian";
+import { ImageUri } from "../../constants/ImageUri";
+import { useAuth } from "../../context/AuthProvider";
+import { useLogout } from "../../query/authQuery";
 
-
-const acount = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
+const account = () => {
   const navigation = useNavigation();
-  const user = {
-    fullname: "John Doe",
-    role: "Admin",
-    profilePicture: "https://cdn-icons-png.flaticon.com/512/3081/3081840.png",
-    coverPhoto: "https://iwritingsolutions.com/wp-content/uploads/2022/05/f2e25fa89ad3e970aeb994db60a81303.jpg", // Demo cover image
+  const {user, isAuth} = useAuth();
+  const {logout} = useLogout();
+
+  console.log(user);
+
+  console.log("user from profile ", user, isAuth);
+
+  const handleLogout = () => {
+    logout(); // Call logout function from auth context
+  };
+
+  const handleLogin = () => {
+    navigation.navigate("login");
   };
 
   return (
     <ScrollView style={styles.container}>
-      {/* Cover Image */}
-      <ImageBackground source={{ uri: user.coverPhoto }} style={styles.coverImage} />
+      {/* Cover Image - using a default gradient background */}
+      <View style={styles.coverImage} />
 
       {/* Profile Info */}
       <View style={styles.profileContainer}>
         <Image
-          source={{ uri: user.profilePicture }}
+          source={{uri: ImageUri(user.profilepicture)}}
           style={styles.profileImage}
-          onError={(e) => (e.target.src = "https://cdn-icons-png.flaticon.com/512/3081/3081840.png")}
+          onError={() => {
+            // Handle image load error for React Native
+            console.log("Profile image failed to load");
+          }}
         />
         <Text style={styles.name}>{user.fullname}</Text>
+        <Text style={styles.email}>{user.email}</Text>
         <Text style={styles.role}>{user.role}</Text>
+        {user.phone && <Text style={styles.phone}>📞 {user.phone}</Text>}
+
+        {/* Member since */}
+        {user.createdAt && (
+          <Text style={styles.memberSince}>
+            Member since {new Date(user.createdAt).toLocaleDateString()}
+          </Text>
+        )}
 
         {/* Buttons */}
         <View style={styles.buttonContainer}>
-          {isLoggedIn ? (
-            <>
-              <TouchableOpacity style={styles.logoutButton} onPress={() => setIsLoggedIn(false)}>
-                <Text style={styles.buttonText}>Logout</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.dashboardButton} onPress={() => navigation.navigate('ai')}>
-                <Text style={styles.buttonText}>Your AI</Text>
-              </TouchableOpacity>
-            </>
+          {isAuth ? (
+            <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+              <Text style={styles.buttonText}>Logout</Text>
+            </TouchableOpacity>
           ) : (
-            <>
-              <TouchableOpacity style={styles.loginButton} onPress={() => navigation.navigate('login')}>
-                <Text style={styles.buttonText}>Login</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.partnerButton} onPress={() => navigation.navigate('ai')}>
-                <Text style={styles.buttonText}>Your AI</Text>
-              </TouchableOpacity>
-            </>
+            <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+              <Text style={styles.buttonText}>Login</Text>
+            </TouchableOpacity>
           )}
         </View>
       </View>
-      <Accordion />
+      {isAuth && <Accordion />}
     </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#f2f2f2" },
-  coverImage: { height: 180, width: "100%" },
-  profileContainer: { alignItems: "center", marginTop: -50 },
-  profileImage: { width: 100, height: 100, borderRadius: 50, borderWidth: 4, borderColor: "#fff" },
-  name: { fontSize: 20, fontWeight: "bold", marginTop: 10 },
-  role: { color: "gray" },
-  buttonContainer: { flexDirection: "row", marginTop: 10 },
-  loginButton: { backgroundColor: "green", padding: 10, borderRadius: 5, margin: 5 },
-  logoutButton: { backgroundColor: "red", padding: 10, borderRadius: 5, margin: 5 },
-  dashboardButton: { backgroundColor: "blue", padding: 10, borderRadius: 5, margin: 5 },
-  partnerButton: { backgroundColor: "blue", padding: 10, borderRadius: 5, margin: 5 },
-  buttonText: { color: "white", fontWeight: "bold" },
+  container: {
+    flex: 1,
+    backgroundColor: "#f5f5f5",
+  },
+  coverImage: {
+    height: 180,
+    width: "100%",
+    backgroundColor: "#4A90E2", // Default blue gradient background
+  },
+  profileContainer: {
+    alignItems: "center",
+    marginTop: -50,
+    backgroundColor: "#fff",
+    marginHorizontal: 20,
+    borderRadius: 15,
+    paddingBottom: 30,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  profileImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    borderWidth: 4,
+    borderColor: "#fff",
+    marginTop: 20,
+  },
+  name: {
+    fontSize: 22,
+    fontWeight: "bold",
+    marginTop: 15,
+    color: "#333",
+  },
+  email: {
+    fontSize: 16,
+    color: "#666",
+    marginTop: 5,
+  },
+  role: {
+    fontSize: 16,
+    color: "#4A90E2",
+    fontWeight: "600",
+    marginTop: 5,
+  },
+  phone: {
+    fontSize: 14,
+    color: "#666",
+    marginTop: 5,
+  },
+  memberSince: {
+    fontSize: 12,
+    color: "#999",
+    marginTop: 8,
+    fontStyle: "italic",
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    marginTop: 20,
+    justifyContent: "center",
+  },
+  loginButton: {
+    backgroundColor: "#4A90E2",
+    paddingHorizontal: 30,
+    paddingVertical: 12,
+    borderRadius: 25,
+    minWidth: 120,
+    alignItems: "center",
+  },
+  logoutButton: {
+    backgroundColor: "#E74C3C",
+    paddingHorizontal: 30,
+    paddingVertical: 12,
+    borderRadius: 25,
+    minWidth: 120,
+    alignItems: "center",
+  },
+  buttonText: {
+    color: "white",
+    fontWeight: "bold",
+    fontSize: 16,
+  },
 });
 
-export default acount;
+export default account;

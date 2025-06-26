@@ -1,74 +1,83 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, Image, TouchableOpacity, FlatList, Alert, ActivityIndicator, StyleSheet } from 'react-native';
-// import { useAuth } from '../stores/Auth';
-// import { useNavigation } from '@react-navigation/native';
-import axios from 'axios';
-import moment from 'moment';
-import { AntDesign } from '@expo/vector-icons'; // Using AntDesign for delete icon
-import { useNavigation } from 'expo-router';
+import { AntDesign } from "@expo/vector-icons";
+import { router, useNavigation } from "expo-router";
+import moment from "moment";
+import { useState } from "react";
+import {
+  ActivityIndicator,
+  Alert,
+  FlatList,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { PageLoading } from "../components/PageLoading";
+import { ImageUri } from "../constants/ImageUri";
+import { useGetCartProduct, useRemoveCartProduct } from "../query/productQuery";
 
 const Cart = () => {
-  const user = "680a69f6a3eb0188797cbe05"
   const navigation = useNavigation();
-  const backendUrl = 'https://socket.hindwana.com';
-  const [initialReviews, setInitialReviews] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const getCartData = async () => {
-    try {
-      setLoading(true);
-      const res = await axios.get(`${backendUrl}/api/usercartdata/${user}`);
-      setInitialReviews(res.data);
-    } catch (error) {
-      console.error(error);
-      Alert.alert("Error", "Failed to load cart data.");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const {data: cartData, isLoading: cartDataLoading, refetch} = useGetCartProduct();
+  const {mutate: removeProductFromCart, isPending: removeProductFromCartLoading} =
+    useRemoveCartProduct();
+
+  if (cartDataLoading) {
+    return <PageLoading />;
+  }
+
+  console.log(cartData, "from cart page");
 
   const navigateToPage = (id) => {
-    navigation.navigate('Page', { id });
+    router.push(`/product/${id}`);
   };
 
-  const handleDelete = async (id) => {
-    try {
-      const res = await axios.delete(`${backendUrl}/api/deletecart/${id}`);
-      Alert.alert("Deleted", res.data.message);
-      setInitialReviews((prev) => prev.filter((item) => item._id !== id));
-    } catch (error) {
-      Alert.alert("Error", "Failed to delete item.");
-    }
+  const handleDelete = (id) => {
+    removeProductFromCart(id, {
+      onSuccess: (data) => {
+        Alert.alert("Deleted", data.message || "Item removed from cart successfully");
+        refetch(); // Refresh the cart data
+      },
+      onError: (error) => {
+        Alert.alert("Error", "Failed to delete item.");
+        console.error("Delete error:", error);
+      },
+    });
   };
 
-  useEffect(() => {
-    if (user) {
-      getCartData();
-    }
-  }, [user]);
-
-  const renderItem = ({ item }) => (
+  const renderItem = ({item}) => (
     <View style={styles.card}>
       <TouchableOpacity style={styles.itemRow} onPress={() => navigateToPage(item.productId._id)}>
         <Image
-          source={{ uri: `${backendUrl}/public/Images/${item.productId.image}` }}
+          source={{
+            uri: item.productId.image
+              ? ImageUri(item.productId.image)
+              : "https://stock.adobe.chttps://as1.ftcdn.net/v2/jpg/15/04/51/26/1000_F_1504512651_XH09eO4Uh8ahYgCeXmCbwuxmWAJt9tD6.jpg",
+          }}
           style={styles.image}
-          defaultSource={{uri: "https://socket.hindwana.com/public/Images/435597b2d80a41c54d8d5532eb96fb7a"}} // fallback image
+          defaultSource={{
+            uri: "https://as1.ftcdn.net/v2/jpg/15/04/51/26/1000_F_1504512651_XH09eO4Uh8ahYgCeXmCbwuxmWAJt9tD6.jpg",
+          }}
         />
         <View style={styles.details}>
           <Text style={styles.title}>{item.productId.Title}</Text>
-          <Text style={styles.brand}>{item.productId.brand}</Text>
+          <Text style={styles.brand}>{item.productId.brand || "Generic"}</Text>
           <Text style={styles.price}>₹ {item.productId.dprice}</Text>
           <Text style={styles.date}>{moment(item.createdAt).format("MMMM D, YYYY")}</Text>
         </View>
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => handleDelete(item._id)} style={styles.deleteButton}>
-        <AntDesign name="delete" size={24} color="red" />
+      <TouchableOpacity
+        onPress={() => handleDelete(item._id)}
+        style={[styles.deleteButton, removeProductFromCartLoading && styles.disabledButton]}
+        disabled={removeProductFromCartLoading}>
+        <AntDesign name="delete" size={24} color={removeProductFromCartLoading ? "#ccc" : "red"} />
       </TouchableOpacity>
     </View>
   );
 
-  if (loading) {
+  if (loading || removeProductFromCartLoading) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="rgb(30,144,255)" />
@@ -76,9 +85,18 @@ const Cart = () => {
     );
   }
 
+  // Show empty state if no cart items
+  if (!cartData || cartData.length === 0) {
+    return (
+      <View style={styles.emptyContainer}>
+        <Text style={styles.emptyText}>Your cart is empty</Text>
+      </View>
+    );
+  }
+
   return (
     <FlatList
-      data={initialReviews}
+      data={cartData}
       keyExtractor={(item) => item._id}
       renderItem={renderItem}
       contentContainerStyle={styles.list}
@@ -89,64 +107,78 @@ const Cart = () => {
 const styles = StyleSheet.create({
   list: {
     padding: 10,
-    backgroundColor: '#f9fafb',
+    backgroundColor: "#f9fafb",
   },
   card: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderRadius: 12,
     padding: 15,
     marginBottom: 15,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowRadius: 6,
     elevation: 3,
-    position: 'relative',
+    position: "relative",
   },
   itemRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     flex: 1,
-    alignItems: 'center',
+    alignItems: "center",
   },
   image: {
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: '#e0e0e0',
+    backgroundColor: "#e0e0e0",
   },
   details: {
     marginLeft: 10,
     flex: 1,
   },
   title: {
-    fontWeight: 'bold',
+    fontWeight: "bold",
     fontSize: 16,
-    color: '#333',
+    color: "#333",
   },
   brand: {
     fontSize: 14,
-    color: '#666',
+    color: "#666",
     marginTop: 4,
   },
   price: {
     fontSize: 16,
-    color: 'green',
+    color: "green",
     marginTop: 6,
   },
   date: {
     fontSize: 12,
-    color: '#999',
+    color: "#999",
     marginTop: 4,
   },
   deleteButton: {
     padding: 5,
   },
+  disabledButton: {
+    opacity: 0.5,
+  },
   loadingContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  }
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#f9fafb",
+  },
+  emptyText: {
+    fontSize: 18,
+    color: "#666",
+    textAlign: "center",
+  },
 });
 
 export default Cart;
