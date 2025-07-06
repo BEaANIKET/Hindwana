@@ -1,11 +1,11 @@
 import { useLocalSearchParams } from "expo-router";
-import { ScrollView } from "react-native-web";
+import { ScrollView } from "react-native";
 import { PageLoading } from "../../components/PageLoading";
 import { ProductDetail } from "../../components/Product";
-import { useAddProductReview, useGetProductDetailsData, useGetProductReview } from "../../query/productQuery";
+import { useGetProductDetailsData, useGetProductReview } from "../../query/productQuery";
 
-export default function Reviews() {
-  const {id} = useLocalSearchParams();
+export default function ProductPage() {
+  const { id } = useLocalSearchParams();
 
   const {
     data: product,
@@ -14,10 +14,9 @@ export default function Reviews() {
   } = useGetProductDetailsData(id, {
     enabled: !!id,
   });
-  const {data: reviews, isLoading: getReviewsLoading} = useGetProductReview(id, {
+  const { data: reviews, isLoading: getReviewsLoading } = useGetProductReview(id, {
     enabled: !!id,
   });
-
 
   if (getProductLoading) {
     return <PageLoading />;

@@ -13,41 +13,12 @@ import {
 export default function Grid({info}) {
   const windowWidth = Dimensions.get("window").width;
 
-  // Card data - images and captions
-  const cardData = [
-    {
-      id: "1",
-      image: "https://images.unsplash.com/photo-1548094990-c16ca90f1f0d?q=80&w=2070",
-      caption: "Fresh Mango",
-    },
-    {
-      id: "2",
-      image: "https://images.unsplash.com/photo-1533038590840-1cde6e668a91?q=80&w=2187",
-      caption: "something good",
-    },
-    {
-      id: "3",
-      image: "https://images.unsplash.com/photo-1548094990-c16ca90f1f0d?q=80&w=2070",
-      caption: "Raghav Jha nn",
-    },
-    {
-      id: "4",
-      image: "https://images.unsplash.com/photo-1548094990-c16ca90f1f0d?q=80&w=2070",
-      caption: "fukra insaan",
-    },
-    {
-      id: "5",
-      image: "https://images.unsplash.com/photo-1548094990-c16ca90f1f0d?q=80&w=2070",
-      caption: "fukra insaan",
-    },
-  ];
-
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.gridContainer}>
-        {info?.map((item) => (
-          <TouchableOpacity onPress={() => router.push(`/product/${item?._id}`)}>
-            <View key={item._id} style={[styles.card, {width: windowWidth / 2 - 12}]}>
+        {info?.map((item, index) => (
+          <TouchableOpacity key={index} onPress={() => router.push(`/product/${item?._id}`)}>
+            <View style={[styles.card, {width: windowWidth / 2 - 12}]}>
               <Image
                 source={{uri: `https://socket.hindwana.com/public/Images/${item?.image}`}}
                 style={styles.image}

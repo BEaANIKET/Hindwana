@@ -1,17 +1,18 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import { Eye, EyeOff } from "lucide-react-native";
 import { useState } from "react";
 import {
-  ActivityIndicator,
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
+    ActivityIndicator,
+    Alert,
+    KeyboardAvoidingView,
+    Platform,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import { useRegisterUser, useSendOtp } from "../query/authQuery";
 
@@ -153,10 +154,10 @@ const SignUp = () => {
         fullname: formData?.name,
       },
       {
-        onSuccess: (data) => {
+        onSuccess: async (data) => {
           console.log("Sign up successful");
-          localStorage.setItem("token", data?.token);
-          localStorage.setItem("userId", data?.userId);
+          await AsyncStorage.setItem("token", data?.token);
+          await AsyncStorage.setItem("userId", data?.userId);
           router.push("(tabs)");
         },
         onError: (error) => {

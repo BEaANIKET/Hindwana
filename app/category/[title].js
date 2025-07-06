@@ -1,13 +1,11 @@
-import {useLocalSearchParams} from "expo-router";
-import {StyleSheet} from "react-native";
-import {FlatList, View} from "react-native-web";
-import {PageLoading} from "../../components/PageLoading";
+import { useLocalSearchParams } from "expo-router";
+import { FlatList, StyleSheet, View } from "react-native";
+import { PageLoading } from "../../components/PageLoading";
 import ProductCard from "../../components/shared/productCard";
-import {useGetCategory} from "../../query/categoryQuery";
+import { useGetCategory } from "../../query/categoryQuery";
 
 export default function Category() {
   const {title} = useLocalSearchParams();
-  console.log(title);
 
   const {
     data: categoryData,
@@ -26,7 +24,6 @@ export default function Category() {
     return <View> {error?.message} </View>;
   }
 
-  console.log(categoryData);
 
   return (
     <FlatList

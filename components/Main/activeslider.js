@@ -70,7 +70,7 @@ const ActiveSlider = ({info}) => {
     setCurrentIndex(index);
   };
 
-  const renderCard = (item, index) => (
+  const renderCard = (item) => (
     <TouchableOpacity key={item._id} onPress={() => router.push(`/product/${item._id}`)} >
        <View  style={styles.card}>
       <Image source={{ uri: `https://socket.hindwana.com/public/Images/${item?.image}` }} style={styles.cardImage} resizeMode="cover" />

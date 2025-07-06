@@ -1,6 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Text, TouchableOpacity, View } from "react-native";
-import { ActivityIndicator } from "react-native-web";
+import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
 import { styles } from "./Style";
 
 export const ActionButtons = ({onBuyNow, onAddToCart, onWishlist, onShare, addToCartLoading}) => {

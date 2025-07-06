@@ -6,5 +6,5 @@ export const ImageUri = (src) => {
 
 
 export const TestFunctions2 = () => {
-  return "hello "
+  return <Text>Hello</Text>
 }

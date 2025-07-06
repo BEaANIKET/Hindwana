@@ -49,8 +49,6 @@ const CheckoutScreen = () => {
   const [promoCode, setPromoCode] = useState("");
   const [currentLocation, setCurrentLocation] = useState(null);
 
-  console.log("Razorpay key ID:", razorpayKey);
-
   // Get user's current location
   useEffect(() => {
     getCurrentLocation();
@@ -181,6 +179,7 @@ const CheckoutScreen = () => {
         },
       ],
       
+      totalPrice: orderData?.totalPrice,
       amount: orderData?.total,
       oprice: orderData?.totalPrice,
       discount: orderData?.discount,

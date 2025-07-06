@@ -28,8 +28,6 @@ const Cart = () => {
     return <PageLoading />;
   }
 
-  console.log(cartData, "from cart page");
-
   const navigateToPage = (id) => {
     router.push(`/product/${id}`);
   };
@@ -42,7 +40,6 @@ const Cart = () => {
       },
       onError: (error) => {
         Alert.alert("Error", "Failed to delete item.");
-        console.error("Delete error:", error);
       },
     });
   };

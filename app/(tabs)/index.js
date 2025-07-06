@@ -34,8 +34,6 @@ const HomeScreen = () => {
     gethome();
   }, []);
 
-  console.log("hello  oooooooooooo");
-
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent hidden={true} />

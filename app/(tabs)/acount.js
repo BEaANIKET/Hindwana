@@ -10,10 +10,6 @@ const account = () => {
   const {user, isAuth} = useAuth();
   const {logout} = useLogout();
 
-  console.log(user);
-
-  console.log("user from profile ", user, isAuth);
-
   const handleLogout = () => {
     logout(); // Call logout function from auth context
   };
@@ -30,7 +26,7 @@ const account = () => {
       {/* Profile Info */}
       <View style={styles.profileContainer}>
         <Image
-          source={{uri: ImageUri(user.profilepicture)}}
+          source={{uri: ImageUri(user?.profilepicture)}}
           style={styles.profileImage}
           onError={() => {
             // Handle image load error for React Native
@@ -62,7 +58,7 @@ const account = () => {
           )}
         </View>
       </View>
-      {isAuth && <Accordion />}
+      <Accordion />
     </ScrollView>
   );
 };

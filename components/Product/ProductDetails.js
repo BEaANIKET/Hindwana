@@ -27,8 +27,6 @@ export const ProductDetail = ({product, reviewsData}) => {
   const {mutate: addToCart, isPending: addToCartLoading} = useAddToCart();
 
   const handleBuyNow = () => {
-    console.log("Buy now pressed with quantity:", quantity);
-    console.log("this is contxt value ", checkoutContext);
     if (!isAuth) {
       router.push("/login");
       return;
@@ -38,7 +36,6 @@ export const ProductDetail = ({product, reviewsData}) => {
   };
 
   const handleAddToCart = () => {
-    console.log("Add to cart pressed with quantity:", quantity);
     if (!isAuth) {
       router.push("/login");
       return;
@@ -96,7 +93,6 @@ export const ProductDetail = ({product, reviewsData}) => {
           <TabNavigation activeTab={activeTab} onTabChange={setActiveTab} />
           {renderTabContent()}
         </View>
-        a
       </ScrollView>
     </SafeAreaView>
   );

@@ -23,7 +23,6 @@ export const useLoginUser = () => {
       });
     },
     onSuccess: (data) => {
-      console.log("hey login succes", data);
       AsyncStorage.setItem("token", data?.token);
       AsyncStorage.setItem("userId", data?.userId);
       queryClient.invalidateQueries({queryKey: ["GET_USER"]});
@@ -66,9 +65,6 @@ export const useLogout = () => {
     try {
       // Clear async and local storage
       await AsyncStorage.clear();
-      localStorage.clear();
-
-      console.log("Storage cleared!");
 
       // Invalidate GET_USER query so it reflects logout state
       queryClient.invalidateQueries({queryKey: ["GET_USER"]});
@@ -86,9 +82,7 @@ export const useUpdateProfile = () => {
 
   return useMutation({
     mutationFn: (formData) => {
-      const userId = formData.get("user");
-      console.log(formData?.get("profilePicture"));
-      
+      const userId = formData.get("user");      
       return API_FILE.post(`/updateaccount/${userId}`, formData);
     },
     onSuccess: () => {
